@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { Link, useLoaderData, redirect, useNavigate, data } from "react-router";
 import { db } from "~/db/index";
-import { projects, projectVersions } from "~/db/schema";
+import { projects, projectVersions, messages } from "~/db/schema";
 import { eq, desc, sql, and, max } from "drizzle-orm";
 import { auth } from "~/lib/auth.server";
 import { ROUTES, APP_NAME } from "~/lib/constants";
-import { generatePRD } from "~/services/ai.server";
+import { generatePRD, chatRefinement } from "~/services/ai.server";
+import type { ChatMessage } from "~/lib/types";
 import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "~/components/ui/card";
@@ -25,9 +26,9 @@ import {
 import ReactMarkdown from "react-markdown";
 import type { Route } from "./+types/projects.$id.generate";
 
-export function meta({ data }: Route.MetaArgs) {
+export function meta({ loaderData }: Route.MetaArgs) {
   return [
-    { title: data?.project ? `Generate PRD — ${data.project.title}` : "Generate PRD" },
+    { title: loaderData?.project ? `Generate PRD — ${loaderData.project.title}` : "Generate PRD" },
   ];
 }
 
@@ -95,7 +96,65 @@ export async function action({ request, params }: Route.ActionArgs) {
   }
 
   const body = await request.json();
-  const { prompt } = body;
+  const { intent, prompt, messages: chatMessages, currentContent } = body;
+
+  // ─── Chat Refinement ────────────────────────────────────────────────────
+  if (intent === "chat") {
+    if (!chatMessages?.length || !currentContent) {
+      return data({ error: "Messages and current PRD are required" }, { status: 400 });
+    }
+
+    try {
+      const result = await chatRefinement(chatMessages as ChatMessage[], currentContent);
+
+      const [maxVersion] = await db
+        .select({ maxNum: max(projectVersions.versionNumber) })
+        .from(projectVersions)
+        .where(eq(projectVersions.projectId, projectId));
+
+      const nextVersion = (maxVersion?.maxNum || 0) + 1;
+
+      const [newVersion] = await db
+        .insert(projectVersions)
+        .values({
+          projectId,
+          versionNumber: nextVersion,
+          markdownContent: result.content,
+          providerUsed: result.provider,
+        })
+        .returning();
+
+      await db
+        .update(projects)
+        .set({ updatedAt: new Date().toISOString() })
+        .where(eq(projects.id, projectId));
+
+      const userMessages = (chatMessages as ChatMessage[]).filter(
+        (m) => m.role === "user" || m.role === "assistant"
+      );
+      await db.insert(messages).values(
+        userMessages.map((m) => ({
+          projectId,
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        }))
+      );
+
+      return data({
+        success: true,
+        version: newVersion,
+        content: result.content,
+        provider: result.provider,
+        info: result.info,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "AI chat failed";
+      console.error("Chat refinement error:", error);
+      return data({ error: message }, { status: 500 });
+    }
+  }
+
+  // ─── Generate PRD ───────────────────────────────────────────────────────
   if (!prompt) {
     return data({ error: "Prompt is required" }, { status: 400 });
   }

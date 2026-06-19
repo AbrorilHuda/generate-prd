@@ -26,9 +26,9 @@ import {
 import ReactMarkdown from "react-markdown";
 import type { Route } from "./+types/projects.$id.versions";
 
-export function meta({ data }: Route.MetaArgs) {
+export function meta({ loaderData }: Route.MetaArgs) {
   return [
-    { title: data?.project ? `Version History — ${data.project.title}` : "Version History" },
+    { title: loaderData?.project ? `Version History — ${loaderData.project.title}` : "Version History" },
   ];
 }
 

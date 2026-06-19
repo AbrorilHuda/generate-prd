@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
 } from "~/components/ui/dropdown-menu";
 import { Moon, Sun, LogOut, LayoutDashboard, FileText, Menu, X } from "lucide-react";
-import { useThemeStore } from "~/stores/theme.store";
+import { useTheme } from "~/stores/theme";
 import { useState } from "react";
 
 interface AppBarProps {
@@ -22,7 +22,7 @@ interface AppBarProps {
 
 export function AppBar({ userName, userEmail, userImage, onLogout }: AppBarProps) {
   const navigate = useNavigate();
-  const { theme, setTheme } = useThemeStore();
+  const { theme, setTheme } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleTheme = () => {

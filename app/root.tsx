@@ -15,7 +15,7 @@ import { useEffect } from "react";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { AppBar } from "~/components/layout/app-bar";
-import { initTheme } from "~/stores/theme.store";
+import { ThemeProvider } from "~/stores/theme";
 import { authClient } from "~/lib/auth.client";
 import { auth } from "~/lib/auth.server";
 
@@ -76,32 +76,30 @@ export default function App() {
   const navigate = useNavigate();
   const revalidator = useRevalidator();
 
-  useEffect(() => {
-    initTheme();
-  }, []);
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="relative flex min-h-screen flex-col">
-        <AppBar
-          userName={data.user?.name}
-          userEmail={data.user?.email}
-          userImage={data.user?.image}
-          onLogout={() => authClient.signOut().then(() => navigate("/"))}
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <div className="relative flex min-h-screen flex-col">
+          <AppBar
+            userName={data.user?.name}
+            userEmail={data.user?.email}
+            userImage={data.user?.image}
+            onLogout={() => authClient.signOut().then(() => navigate("/"))}
+          />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+        </div>
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+          toastOptions={{
+            className: "dark:!bg-zinc-900 dark:!text-zinc-100 dark:!border-zinc-800",
+          }}
         />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-      </div>
-      <Toaster
-        position="top-right"
-        richColors
-        closeButton
-        toastOptions={{
-          className: "dark:!bg-zinc-900 dark:!text-zinc-100 dark:!border-zinc-800",
-        }}
-      />
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

@@ -121,13 +121,13 @@ async function callWithFallback(
 ): Promise<{ content: string; provider: string; info: string[] }> {
   try {
     const result = await callProvider(messages, timeoutMs, "nvidia");
-    return { ...result, info: [] };
+    return { ...result, provider: "NVIDIA", info: [] };
   } catch (nvidiaErr) {
     const nvidiaMsg = (nvidiaErr as Error).message;
     console.warn("NVIDIA failed, falling back to TokenRouter:", nvidiaMsg);
     try {
       const result = await callProvider(messages, timeoutMs, "tokenrouter");
-      return { ...result, info: [`NVIDIA unavailable: ${nvidiaMsg}`, "Falling back to TokenRouter"] };
+      return { ...result, provider: "MiniMax", info: [`NVIDIA unavailable: ${nvidiaMsg}`, "Falling back to TokenRouter"] };
     } catch (tokenErr) {
       const tokenMsg = (tokenErr as Error).message;
       throw new Error(

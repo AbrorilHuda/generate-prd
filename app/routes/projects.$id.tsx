@@ -22,9 +22,9 @@ import {
 import ReactMarkdown from "react-markdown";
 import type { Route } from "./+types/projects.$id";
 
-export function meta({ data }: Route.MetaArgs) {
+export function meta({ loaderData }: Route.MetaArgs) {
   return [
-    { title: data?.project ? `${data.project.title} — ${APP_NAME}` : `Project — ${APP_NAME}` },
+    { title: loaderData?.project ? `${loaderData.project.title} — ${APP_NAME}` : `Project — ${APP_NAME}` },
   ];
 }
 
