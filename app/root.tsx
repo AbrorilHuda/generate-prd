@@ -7,11 +7,9 @@ import {
   ScrollRestoration,
   useLoaderData,
   useNavigate,
-  useRevalidator,
 } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import { useEffect } from "react";
 import type { Route } from "./+types/root";
 import "./app.css";
 import { AppBar } from "~/components/layout/app-bar";
@@ -74,7 +72,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   const data = useLoaderData<typeof loader>();
   const navigate = useNavigate();
-  const revalidator = useRevalidator();
 
   return (
     <ThemeProvider>
