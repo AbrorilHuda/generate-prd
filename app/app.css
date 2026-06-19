@@ -7,9 +7,111 @@
 
 html,
 body {
-  @apply bg-white dark:bg-gray-950;
+  @apply bg-white dark:bg-zinc-950;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-zinc-300 dark:bg-zinc-700;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-zinc-400 dark:bg-zinc-600;
+}
+
+/* Markdown preview styling */
+.markdown-preview h1 {
+  @apply text-2xl font-bold mb-4 text-zinc-900 dark:text-zinc-100;
+}
+
+.markdown-preview h2 {
+  @apply text-xl font-semibold mb-3 text-zinc-900 dark:text-zinc-100;
+}
+
+.markdown-preview h3 {
+  @apply text-lg font-semibold mb-2 text-zinc-900 dark:text-zinc-100;
+}
+
+.markdown-preview p {
+  @apply mb-4 leading-7 text-zinc-700 dark:text-zinc-300;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  @apply mb-4 pl-6 text-zinc-700 dark:text-zinc-300;
+}
+
+.markdown-preview ul {
+  @apply list-disc;
+}
+
+.markdown-preview ol {
+  @apply list-decimal;
+}
+
+.markdown-preview li {
+  @apply mb-1;
+}
+
+.markdown-preview code {
+  @apply rounded bg-zinc-100 px-1.5 py-0.5 text-sm font-mono text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200;
+}
+
+.markdown-preview pre {
+  @apply mb-4 overflow-x-auto rounded-lg bg-zinc-100 p-4 dark:bg-zinc-800;
+}
+
+.markdown-preview pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown-preview blockquote {
+  @apply mb-4 border-l-4 border-indigo-500 pl-4 italic text-zinc-600 dark:text-zinc-400;
+}
+
+.markdown-preview table {
+  @apply mb-4 w-full border-collapse;
+}
+
+.markdown-preview th {
+  @apply border-b border-zinc-200 px-4 py-2 text-left text-sm font-semibold dark:border-zinc-700;
+}
+
+.markdown-preview td {
+  @apply border-b border-zinc-200 px-4 py-2 text-sm dark:border-zinc-700;
+}
+
+.markdown-preview a {
+  @apply text-indigo-600 underline hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300;
+}
+
+.markdown-preview hr {
+  @apply my-6 border-zinc-200 dark:border-zinc-700;
+}
+
+.markdown-preview strong {
+  @apply font-semibold text-zinc-900 dark:text-zinc-100;
+}
+
+/* Chat messages */
+.chat-message-user {
+  @apply rounded-2xl rounded-bl-md bg-indigo-600 px-4 py-3 text-white dark:bg-indigo-500;
+}
+
+.chat-message-assistant {
+  @apply rounded-2xl rounded-br-md bg-zinc-100 px-4 py-3 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100;
+}
+
+/* Focus ring override for all interactive elements */
+*:focus-visible {
+  @apply outline-none ring-2 ring-indigo-500 ring-offset-2 dark:ring-offset-zinc-950;
 }
